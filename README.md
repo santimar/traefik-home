@@ -1,3 +1,5 @@
+[![ghcr.io release](https://img.shields.io/github/v/release/santimar/traefik-home?label=latest%20version&style=for-the-badge)](https://github.com/santimar/traefik-home/pkgs/container/traefik-home/versions)
+
 # Traefik Home
 ![preview](/doc/preview.jpg)
 
