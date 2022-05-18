@@ -1,16 +1,9 @@
-FROM arm32v7/nginx:1.21-alpine as builder
-
 ARG DOCKER_GEN_VERSION
+FROM ghcr.io/nginx-proxy/docker-gen:${DOCKER_GEN_VERSION} as docker-gen
 
-RUN apk add wget
+FROM nginx:1.21-alpine
 
-RUN wget "github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VERSION/docker-gen-alpine-linux-armhf-$DOCKER_GEN_VERSION.tar.gz"
-RUN tar -C /usr/local/bin -xvzf docker-gen-alpine-linux-armhf-$DOCKER_GEN_VERSION.tar.gz
-
-
-FROM arm32v7/nginx:1.21-alpine
-
-COPY --from=builder /usr/local/bin/docker-gen /usr/local/bin/docker-gen
+COPY --from=docker-gen /usr/local/bin/docker-gen /usr/local/bin/docker-gen
 COPY ./app /app
 #ensure docker-entrypoint is executable
 RUN chmod +x /app/docker-entrypoint.sh 
