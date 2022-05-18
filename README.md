@@ -7,8 +7,6 @@ This tool will create an homepage for a quick access to the domains where contai
 
 Domains are automatically retrieved reading traefik labels and only http(s) routers are supported.
 
-**Note**: currently only ARMv7 architecture is supported
-
 ## Why this tool
 
 Treafik is a reverse proxy that reads label on the docker compose file and automatically set up itself, so that you can access a service on a container with the specified hostname.
