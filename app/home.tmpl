@@ -120,7 +120,7 @@
                 {{ $host := index $container.Labels $host_label }}
                 {{/* Get the first parameter if host contains multiple values */}}
                 {{ $host := split $host "," | first }}
-                {{ $host := regexFind "([a-z0-9]+\\.)+[a-z0-9]+" $host }}
+                {{ $host := regexFind "([a-z0-9-]+\\.)+[a-z0-9-]+" $host }}
 
                 {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
                 {{ $entrypoint := index $container.Labels $entrypoint_label }}
