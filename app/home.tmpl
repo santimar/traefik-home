@@ -162,17 +162,31 @@
             <ul class="nav">
                 <li class="nav-item">
                     <span class="nav-link px-2">
-                        <span class="badge bg-secondary">{{ index $home_container.Labels "org.opencontainers.image.version" }}</span>
+                        <span class="badge bg-secondary position-relative" id="badge-tag">{{ index $home_container.Labels "org.opencontainers.image.version" }}</span>
                     </span>
                 </li>
-                <li class="nav-item">
-                    <a href="https://github.com/santimar/traefik-home/releases/latest" class="nav-link px-2 text-decoration-underline text-muted">Check updates</a>
-                </li>
+                <li class="nav-item" id="menu-item-new-version"></li>
                 <li class="nav-item">
                     <a href="https://github.com/santimar/traefik-home" class="nav-link px-2 text-muted">About</a>
                 </li>
             </ul>
         </footer>
+        <script>
+            const current_version = "{{ index $home_container.Labels "org.opencontainers.image.version" }}";
+            fetch("https://api.github.com/repos/santimar/traefik-home/releases/latest", {"headers": {"Accept": "application/vnd.github.v3+json"}})
+                .then(response => response.json())
+                .then(response => {
+                    const last_version = response.tag_name;
+                    if (last_version !== current_version) {
+                        console.log("New version available", current_version, "->", last_version);
+                        let badge = document.getElementById("badge-tag");
+                        let menu_item = document.getElementById("menu-item-new-version");
+                        badge.innerHTML += '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">!</span>';
+                        menu_item.innerHTML = '<a href="https://github.com/santimar/traefik-home/releases/latest" class="nav-link px-2 text-decoration-underline text-muted">New version available</a>';
+                    }
+                })
+                .catch(error => console.error("There was an error while checking for updates. If this happens regularly, open an issue here: https://github.com/santimar/traefik-home/issues", error));
+        </script>
     {{ end }}
 </body>
 </html>
