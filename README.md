@@ -3,18 +3,18 @@
 # Traefik Home
 ![preview](/doc/preview.jpg)
 
-This tool will create an homepage for a quick access to the domains where containers are exposed via [traefik proxy](https://traefik.io/traefik/) using v2 configuration. (for old v1 configuration see [here](https://github.com/lobre/traefik-home))
+This tool will create a homepage for quick access to the domains where containers are exposed via [traefik proxy](https://traefik.io/traefik/) using v2 configuration. (for old v1 configuration see [here](https://github.com/lobre/traefik-home))
 
 Domains are automatically retrieved reading traefik labels and only http(s) routers are supported.
 
 ## Why this tool
 
-Treafik is a reverse proxy that reads label on the docker compose file and automatically set up itself, so that you can access a service on a container with the specified hostname.
+Traefik is a reverse proxy that reads label on the docker compose file and automatically set up itself, so that you can access a service on a container with the specified hostname.
 Even though Traefik provides a dashboard that allow you to see services that are proxied, you still have to remember (or save somewhere) all the hostnames in order to access your services.
-This tool creates an Home page where all hostnames all listed, for a easy access.
+This tool creates a Home page where all hostnames all listed, for easy access.
 
-It uses [docker-gen](https://github.com/jwilder/docker-gen) to monitor docker configuration changes and render an web page that will be served using `nginx`
-This way changes are immedialtely reflected whenever something gets updated.
+It uses [docker-gen](https://github.com/jwilder/docker-gen) to monitor docker configuration changes and render a web page that will be served using `nginx`
+This way changes are immediately reflected whenever something gets updated.
 
 ## Usage
 
@@ -63,8 +63,8 @@ The `traefik-home` container can be configured using the following optional labe
 
 | Label  | Description | Default
 | --- | --- | --- |
-| traefik-home.show-footer | Wheter to show footer on the home page | true |
-| traefik-home.show-status-dot | Wheter to show green/red status dot near the container name | true |
+| traefik-home.show-footer | Whether to show footer on the home page | true |
+| traefik-home.show-status-dot | Whether to show green/red status dot near the container name | true |
 
 ## Labels to configure containers
 
