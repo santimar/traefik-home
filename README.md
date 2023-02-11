@@ -72,9 +72,38 @@ Home will use the following `traefik` labels to generate the HTML page.
 
 | Label  | Description |
 | --- | --- |
-| traefik.http.routers.\<service\>.rule | Domain used by Home to generate the link to the service |
+| traefik.http.routers.\<service\>.rule | Domain and path used by Home to generate the link to the service |
 | traefik.http.routers.\<service\>.entrypoints | Only `web` or `websecure` entrypoints are shown |
-| traefik.home | Only explicitly enabled container are shown on the homepage |
+| traefik.enable | Only explicitly enabled container are shown on the homepage |
+
+<details>
+<summary>note about setting multiple domains and/or paths on the same rule</summary>
+
+---
+Traefik allows you to set multiple domains and path on the same rule like 
+```
+Host(`example.org`) && PathPrefix(`/path`) || Host(`domain.com`) && Path(`/path`)
+```
+However Traefik-Home will only use the first `Host` and `Path/PathPrefix` found within the rule.
+
+In this example, the app will be available at `example.org/path`, ignoring the other domain.
+
+Also, keep in mind that using a rule like 
+```
+Host(`example.org`) || Host(`domain.com`) && PathPrefix(`/path`)
+```
+will create a link to `example.org/path`.
+
+In a situation like this, you just have to rewrite the rule like 
+```
+Host(`example.org`) && PathPrefix(`/`) || Host(`domain.com`) && PathPrefix(`/path`)
+```
+or like 
+```
+Host(`domain.com`) && PathPrefix(`/path`) || Host(`example.org`)
+```
+---
+</details>
 
 On each exposed container, the following optional labels can be added to provide a personalized configuration.
 
