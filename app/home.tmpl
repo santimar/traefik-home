@@ -120,7 +120,7 @@
                 {{ $host_rule := split $host_rule "," | first }}
                 {{ $host := regexReplaceAll "Host\\(\\`([a-z0-9-\\.]+)\\`\\).*" $host_rule "$1" }}
 
-                {{/* Define an empty path incase the rules don't specify one*/}}
+                {{/* Define an empty path in case the rules don't specify one*/}}
                 {{ $path := "" }}
                 {{if (regexMatch ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule) }}
                     {{ $path = regexReplaceAll ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule "$2" }}
