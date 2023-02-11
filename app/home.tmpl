@@ -104,9 +104,7 @@
                 {{ $service_name := "" }}
                 {{ range $k := keys $container.Labels}}
                     {{ if (regexMatch "traefik\\.http\\.routers\\.(.)+\\.rule" $k) }}
-                        {{/* I couldn't find a function that finds a group in a regex, so I just remove text before and after the group */}}
-                        {{ $service_name = regexReplaceAll "traefik\\.http\\.routers\\." $k "" }}
-                        {{ $service_name = regexReplaceAll "\\.rule" $service_name "" }}
+                        {{ $service_name = regexReplaceAll "traefik\\.http\\.routers\\.([^\\.]+)\\.rule" $k "$1" }}
                         {{break}}
                     {{ end }}
                 {{ end }}
@@ -117,10 +115,16 @@
                 {{ end }}
 
                 {{ $host_label := print "traefik.http.routers." $service_name ".rule" }}
-                {{ $host := index $container.Labels $host_label }}
+                {{ $host_rule := index $container.Labels $host_label }}
                 {{/* Get the first parameter if host contains multiple values */}}
-                {{ $host := split $host "," | first }}
-                {{ $host := regexFind "([a-z0-9-]+\\.)+[a-z0-9-]+" $host }}
+                {{ $host_rule := split $host_rule "," | first }}
+                {{ $host := regexReplaceAll "Host\\(\\`([a-z0-9-\\.]+)\\`\\).*" $host_rule "$1" }}
+
+                {{/* Define an empty path in case the rules don't specify one*/}}
+                {{ $path := "" }}
+                {{if (regexMatch ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule) }}
+                    {{ $path = regexReplaceAll ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule "$2" }}
+                {{end}}
 
                 {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
                 {{ $entrypoint := index $container.Labels $entrypoint_label }}
@@ -135,7 +139,7 @@
                 {{ end }}
 
                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mt-4 mx-xl-2">
-                    <a class="text-decoration-none text-secondary" href="{{ print $protocol "://" $host }}">
+                    <a class="text-decoration-none text-secondary" href="{{ print $protocol "://" $host $path }}">
                         <div class="row-cols-1 text-center">
                             {{/* if icon is set for this docker image then display it, otherwise use a generic icon made up by the first 2 letters */}}
                             {{ $icon := index $container.Labels "traefik-home.icon"}}
