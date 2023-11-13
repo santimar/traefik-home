@@ -1,4 +1,4 @@
-ARG DOCKER_GEN_VERSION
+ARG DOCKER_GEN_VERSION=latest
 FROM ghcr.io/nginx-proxy/docker-gen:${DOCKER_GEN_VERSION} as docker-gen
 
 FROM nginx:1.21-alpine
