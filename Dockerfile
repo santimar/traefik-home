@@ -11,5 +11,5 @@ COPY ./static/ /usr/share/nginx/html/
 WORKDIR /app/
 
 EXPOSE 80
-HEALTHCHECK --interval=60s --timeout=10s --start-period=5s --retries=3 CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 CMD curl -f http://localhost/ || exit 1
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
