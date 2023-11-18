@@ -1,7 +1,7 @@
 {{ $home_container := where $ "ID" .Docker.CurrentContainerID | first }}
 {{ $show_footer := or (index $home_container.Labels "traefik-home.show-footer") "true" | parseBool }}
 {{ $show_status_dot := or (index $home_container.Labels "traefik-home.show-status-dot") "true" | parseBool }}
-{{ $sort_order := or (index $home_container.Labels "traefik-home.sort-by") "default" }}
+{{ $sort_by := or (index $home_container.Labels "traefik-home.sort-by") "default" }}
 
 <!DOCTYPE html>
 <html lang="en" class="min-vh-100">
@@ -78,6 +78,9 @@
                 background-color: var(--bs-dark);
                 color: var(--bs-light);
             }
+            footer .text-muted {
+                color: rgba(var(--bs-secondary-rgb),var(--bs-text-opacity))!important;
+            }
         }
     </style>
 </head>
@@ -94,7 +97,7 @@
     <div class="container my-auto pb-4">
         {{/* Display only containers explicitly enabled */}}
         {{ $containers := whereLabelValueMatches $ "traefik.enable" "true" }}
-        {{ if eq $sort_order "name" }}
+        {{ if eq $sort_by "name" }}
             {{ $containers = sortObjectsByKeysAsc $containers "Name" }}
         {{ end }}
         <div class="row align-content-center justify-content-evenly">            
@@ -174,7 +177,7 @@
         </div>   
     </div>
     {{ if $show_footer }}
-        <footer class="border-top d-flex justify-content-center justify-content-xl-end px-xl-5 py-3 bg-white">
+        <footer class="border-top d-flex justify-content-center justify-content-xl-end px-xl-5 py-3">
             <ul class="nav">
                 <li class="nav-item">
                     <span class="nav-link px-2">
