@@ -1,4 +1,4 @@
-ARG DOCKER_GEN_VERSION
+ARG DOCKER_GEN_VERSION=0.9.0
 FROM ghcr.io/nginx-proxy/docker-gen:${DOCKER_GEN_VERSION} as docker-gen
 
 FROM nginx:1.21-alpine
@@ -11,5 +11,5 @@ COPY ./static/ /usr/share/nginx/html/
 WORKDIR /app/
 
 EXPOSE 80
-HEALTHCHECK --interval=60s --timeout=10s --start-period=5s --retries=3 CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 CMD curl -f http://localhost/ || exit 1
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

@@ -65,6 +65,7 @@ The `traefik-home` container can be configured using the following optional labe
 | --- | --- | --- |
 | traefik-home.show-footer | Whether to show footer on the home page | true |
 | traefik-home.show-status-dot | Whether to show green/red status dot near the container name | true |
+| traefik-home.sort-by | Container list sort order. Supported values are "default" (container creation date) or "name" | "default" |
 
 ## Labels to configure containers
 
