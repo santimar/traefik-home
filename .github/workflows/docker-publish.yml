@@ -16,7 +16,6 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  DOCKER_GEN_VERSION: 0.9.0
 
 jobs:
   build:
@@ -67,5 +66,3 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            DOCKER_GEN_VERSION=${{ env.DOCKER_GEN_VERSION }}
