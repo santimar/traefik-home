@@ -114,6 +114,30 @@ On each exposed container, the following optional labels can be added to provide
 | traefik-home.icon="https://url/of/icon"  | URL of an image that will be used as icon for the container. If this label is not used, a icon with the container's initials will be used |
 | traefik-home.alias="alias"  | If used, the alias will be shown instead of the container name |
 
+<details>
+<summary>serving self-hosted icons</summary>
+
+`traefik-home.icon` must be an URL, but since `traefik-home` runs on `nginx`, we can take advandage of it and serve self-hosted icons as well.
+
+You will need to mount icon file(s) to `/usr/share/nginx/html/icons/` folder on `traefik-home` container like:
+
+```yaml
+traefik-home:
+   image: ghcr.io/santimar/traefik-home:latest
+   volumes:
+       - /var/run/docker.sock:/var/run/docker.sock:ro
+       - "/path/to/your/icon.svg:/usr/share/nginx/html/icons/my-icon.svg:ro"
+   labels:
+       - "traefik.enable=true"
+       - "traefik.http.routers.traefik-home.rule=Host(`dashboard.localhost`)"
+ ```
+
+And then reference it in other container labels like so:
+```yaml
+   - "traefik-home.icon=http://dashboard.localhost/icons/my-icon.svg"
+```
+</details>
+
 ## Update
 
 When a new release is available, just:
