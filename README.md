@@ -43,6 +43,8 @@ services:
     container_name: traefik-home
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - ADD_TARGET_BLANK=false # true will open container links to new tab
     labels:
       - traefik.enable="true"
       - traefik.http.routers.traefik-home.rule="Host(`home.example.com`)"
