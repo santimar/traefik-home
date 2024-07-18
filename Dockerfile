@@ -5,6 +5,7 @@ FROM nginx:1.21-alpine
 
 COPY --from=docker-gen /usr/local/bin/docker-gen /usr/local/bin/docker-gen
 COPY ./app /app
+
 #ensure docker-entrypoint is executable
 RUN chmod +x /app/docker-entrypoint.sh 
 COPY ./static/ /usr/share/nginx/html/
