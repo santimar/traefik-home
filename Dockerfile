@@ -1,5 +1,5 @@
 ARG DOCKER_GEN_VERSION=0.9.0
-FROM ghcr.io/nginx-proxy/docker-gen:${DOCKER_GEN_VERSION} as docker-gen
+FROM ghcr.io/nginx-proxy/docker-gen:${DOCKER_GEN_VERSION} AS docker-gen
 
 FROM nginx:1.21-alpine
 
