@@ -8,12 +8,9 @@
     {{ $target = "_blank" }}
 {{ end }}
 
-
 {{/* Read HTTP and HTTPS entrypoints from labels or use defaults */}}
 {{ $http_entrypoints := split (or (index $home_container.Labels "traefik-home.http-entrypoints") "web") "," }}
 {{ $https_entrypoints := split (or (index $home_container.Labels "traefik-home.https-entrypoints") "websecure") "," }}
-
-
 
 <!DOCTYPE html>
 <html lang="en" class="min-vh-100">
@@ -157,11 +154,6 @@
             {{ $entrypoints := index $container.Labels $entrypoint_label }}
             {{ $protocol := "" }}
 
-
-
-
-
-
             {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
             {{ $entrypoints := index $container.Labels $entrypoint_label }}
             {{ $protocol := "" }}
@@ -214,23 +206,6 @@
                 {{/* Skip container if entrypoints label is not defined */}}
                 {{continue}}
             {{ end }}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mt-4 mx-xl-2">
                     <a class="text-decoration-none text-secondary" target="{{ $target }}" href="{{ print $protocol "://" $host $path }}">
