@@ -154,10 +154,6 @@
             {{ $entrypoints := index $container.Labels $entrypoint_label }}
             {{ $protocol := "" }}
 
-            {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
-            {{ $entrypoints := index $container.Labels $entrypoint_label }}
-            {{ $protocol := "" }}
-
             {{/* Check if entrypoints label is defined and split into an array */}}
             {{ if $entrypoints }}
                 {{ $entrypoints_list := split $entrypoints "," }}
@@ -182,19 +178,11 @@
                         {{ $protocol = "https" }}
                         {{ $entrypoint_found = true }}
                         {{break}}
-                    {{ else }}
-                        {{ range $http_entrypoints }}
-                            {{ if eq $current_entrypoint . }}
-                                {{ $is_http = true }}
-                                {{break}}
-                            {{ end }}
-                        {{ end }}
-
-                        {{ if $is_http }}
-                            {{ $protocol = "http" }}
-                            {{ $entrypoint_found = true }}
-                            {{break}}
-                        {{ end }}
+                    {{ end }}
+                    {{ if $is_http }}
+                        {{ $protocol = "http" }}
+                        {{ $entrypoint_found = true }}
+                        {{break}}
                     {{ end }}
                 {{ end }}
 
