@@ -8,6 +8,10 @@
     {{ $target = "_blank" }}
 {{ end }}
 
+{{/* Read HTTP and HTTPS entrypoints from labels or use defaults */}}
+{{ $http_entrypoints := split (or (index $home_container.Labels "traefik-home.http-entrypoints") "web") "," }}
+{{ $https_entrypoints := split (or (index $home_container.Labels "traefik-home.https-entrypoints") "websecure") "," }}
+
 <!DOCTYPE html>
 <html lang="en" class="min-vh-100">
 <head>
@@ -146,17 +150,50 @@
                     {{ $path = regexReplaceAll ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule "$2" }}
                 {{end}}
 
-                {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
-                {{ $entrypoint := index $container.Labels $entrypoint_label }}
-                {{ $protocol := "" }}
-                {{ if eq $entrypoint "websecure" }}
-                    {{ $protocol = "https" }}
-                {{ else if eq $entrypoint "web" }}
-                    {{ $protocol = "http" }}
-                {{ else }}
-                    {{/* entrypoint not supported */}}
+            {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
+            {{ $entrypoints := index $container.Labels $entrypoint_label }}
+            {{ $protocol := "" }}
+
+            {{/* Check if entrypoints label is defined and split into an array */}}
+            {{ if $entrypoints }}
+                {{ $entrypoints_list := split $entrypoints "," }}
+
+                {{/* Flag to determine if a matching entrypoint was found */}}
+                {{ $entrypoint_found := false }}
+
+                {{/* Check if entrypoint is in the HTTPS entrypoints list */}}
+                {{ range $entrypoints_list }}
+                    {{ $current_entrypoint := . }}
+                    {{ $is_https := false }}
+                    {{ $is_http := false }}
+
+                    {{ range $https_entrypoints }}
+                        {{ if eq $current_entrypoint . }}
+                            {{ $is_https = true }}
+                            {{break}}
+                        {{ end }}
+                    {{ end }}
+
+                    {{ if $is_https }}
+                        {{ $protocol = "https" }}
+                        {{ $entrypoint_found = true }}
+                        {{break}}
+                    {{ end }}
+                    {{ if $is_http }}
+                        {{ $protocol = "http" }}
+                        {{ $entrypoint_found = true }}
+                        {{break}}
+                    {{ end }}
+                {{ end }}
+
+                {{/* Skip container if no supported entrypoint was found */}}
+                {{ if not $entrypoint_found }}
                     {{continue}}
                 {{ end }}
+            {{ else }}
+                {{/* Skip container if entrypoints label is not defined */}}
+                {{continue}}
+            {{ end }}
 
                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mt-4 mx-xl-2">
                     <a class="text-decoration-none text-secondary" target="{{ $target }}" href="{{ print $protocol "://" $host $path }}">
