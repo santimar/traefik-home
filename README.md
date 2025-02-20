@@ -3,9 +3,27 @@
 # Traefik Home
 ![preview](/doc/preview.jpg)
 
-This tool will create a homepage for quick access to the domains where containers are exposed via [traefik proxy](https://traefik.io/traefik/) using v2 configuration. (for old v1 configuration see [here](https://github.com/lobre/traefik-home))
+This tool will create a homepage for quickly accessing services which are hosted via the [Traefik reverse proxy](https://traefik.io/traefik/). This repo is for those using V2 and V3 of Traefik (for those using V1, please look [here](https://github.com/lobre/traefik-home))
 
 Domains are automatically retrieved reading traefik labels and only http(s) routers are supported.
+
+> [!IMPORTANT]  
+> This tool makes some assumptions about your Traefik's setup and the way things are configured. Namely, it assumes that the _http_ endpoint is named `web`, while the _https_ endpoint is named `websecure`, in the [static configuration](https://doc.traefik.io/traefik/getting-started/configuration-overview/#the-static-configuration) of Traefik. It is important that this be the case or otherwise, you will end up with an [empty page](../../issues/69).  
+> Assuming that you are using a _configuration file_ (as opposed to ENV variables or CLI options) for your static configuration, the endpoint part of the config might look something like this:
+> ```yaml
+> entryPoints:
+> web:
+>   address: ":80"
+>   http:
+>     redirections:
+>       entryPoint:
+>         to: https
+>         scheme: https
+>         permanent: true
+> websecure:
+>   address: ":443"
+> ```
+> As seen above, the names chosen for the endpoints are `web` and `websecure`, respectively, which is expected by this tool.
 
 ## Why this tool
 
