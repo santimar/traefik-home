@@ -67,6 +67,8 @@ The `traefik-home` container can be configured using the following optional labe
 | traefik-home.show-status-dot | Whether to show green/red status dot near the container name | true |
 | traefik-home.sort-by | Container list sort order. Supported values are "default" (container creation date) or "name" | "default" |
 | traefik-home.open-link-in-new-tab | Whether to open services link in a new tab | false |
+| traefik-home.https-entrypoints | List of https entrypoints to show. <br> Example: `traefik-home.https-entrypoints=websecure1,websecure2` | websecure |
+| traefik-home.http-entrypoints | List of http entrypoints to show. <br> Example: `traefik-home.http-entrypoints=websecure1,websecure2` | web |
 
 ## Labels to configure containers
 
@@ -75,7 +77,6 @@ Home will use the following `traefik` labels to generate the HTML page.
 | Label  | Description |
 | --- | --- |
 | traefik.http.routers.\<service\>.rule | Domain and path used by Home to generate the link to the service |
-| traefik.http.routers.\<service\>.entrypoints | Only `web` or `websecure` entrypoints are shown |
 | traefik.enable | Only explicitly enabled container are shown on the homepage |
 
 <details>
