@@ -1,7 +1,7 @@
-ARG DOCKER_GEN_VERSION=0.9.0
+ARG DOCKER_GEN_VERSION=0.16.2
 FROM ghcr.io/nginx-proxy/docker-gen:${DOCKER_GEN_VERSION} AS docker-gen
 
-FROM nginx:1.21-alpine
+FROM nginx:1.29-alpine
 
 COPY --from=docker-gen /usr/local/bin/docker-gen /usr/local/bin/docker-gen
 COPY ./app /app
