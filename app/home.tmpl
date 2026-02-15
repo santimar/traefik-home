@@ -138,13 +138,22 @@
                 {{ $host_rule := index $container.Labels $host_label }}
                 {{/* Get the first parameter if host contains multiple values */}}
                 {{ $host_rule := split $host_rule "," | first }}
-                {{ $host := regexReplaceAll "Host\\(\\`([a-z0-9-\\.]+)\\`\\).*" $host_rule "$1" }}
+                {{ $host := "" }}
+                {{ if (regexMatch "Host\\(\\`([a-z0-9-\\.]+)\\`\\)" $host_rule) }}
+                    {{ $host = regexReplaceAll ".*?Host\\(\\`([a-z0-9-\\.]+)\\`\\).*" $host_rule "$1" }}
+                {{ end }}
 
                 {{/* Define an empty path in case the rules don't specify one*/}}
                 {{ $path := "" }}
                 {{if (regexMatch ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule) }}
                     {{ $path = regexReplaceAll ".*?Path(Prefix)?\\(\\`([a-z0-9-\\/]+)\\`\\).*" $host_rule "$2" }}
                 {{end}}
+
+                {{/* Add a custom path in case traefik-home.extra-path is defined */}}
+                {{ $extra_path := index $container.Labels "traefik-home.extra-path" }}
+                {{ if $extra_path }}
+                    {{ $path = print $path $extra_path }}
+                {{ end }}
 
                 {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
                 {{ $entrypoint := index $container.Labels $entrypoint_label }}
@@ -158,8 +167,14 @@
                     {{continue}}
                 {{ end }}
 
+                {{/* Generate a relative URL if the host is empty */}}
+                {{ $final_url := print $protocol "://" $host $path }}
+                {{ if eq $host "" }}
+                    {{ $final_url = $path }}
+                {{ end }}
+
                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mt-4 mx-xl-2">
-                    <a class="text-decoration-none text-secondary" target="{{ $target }}" href="{{ print $protocol "://" $host $path }}">
+                    <a class="text-decoration-none text-secondary" target="{{ $target }}" href="{{ print $final_url}}">
                         <div class="row-cols-1 text-center">
                             {{/* if icon is set for this docker image then display it, otherwise use a generic icon made up by the first 2 letters */}}
                             {{ $icon := index $container.Labels "traefik-home.icon"}}

@@ -132,6 +132,7 @@ On each exposed container, the following optional labels can be added to provide
 | traefik-home.hide="true" | Do not show this container in the home page |
 | traefik-home.icon="https://url/of/icon"  | URL of an image that will be used as icon for the container. If this label is not used, a icon with the container's initials will be used |
 | traefik-home.alias="alias"  | If used, the alias will be shown instead of the container name |
+| traefik-home.extra-path="/additional/path" | If used, an additional path will be appended to the url |
 
 <details>
 <summary>serving self-hosted icons</summary>
