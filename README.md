@@ -7,23 +7,6 @@ This tool will create a homepage for quickly accessing services which are hosted
 
 Domains are automatically retrieved reading traefik labels and only http(s) routers are supported.
 
-> [!IMPORTANT]  
-> This tool makes some assumptions about your Traefik's setup and the way things are configured. Namely, it assumes that the _http_ endpoint is named `web`, while the _https_ endpoint is named `websecure`, in the [static configuration](https://doc.traefik.io/traefik/getting-started/configuration-overview/#the-static-configuration) of Traefik. It is important that this be the case or otherwise, you will end up with an [empty page](../../issues/69).  
-> Assuming that you are using a _configuration file_ (as opposed to ENV variables or CLI options) for your static configuration, the endpoint part of the config might look something like this:
-> ```yaml
-> entryPoints:
-> web:
->   address: ":80"
->   http:
->     redirections:
->       entryPoint:
->         to: https
->         scheme: https
->         permanent: true
-> websecure:
->   address: ":443"
-> ```
-> As seen above, the names chosen for the endpoints are `web` and `websecure`, respectively, which is expected by this tool.
 
 ## Why this tool
 
@@ -96,9 +79,19 @@ Home will use the following `traefik` labels to generate the HTML page.
 | traefik.http.routers.\<service\>.entrypoints | Only `web` or `websecure` entrypoints are shown |
 | traefik.enable | Only explicitly enabled container are shown on the homepage |
 
+
+
+## Environment variables
+
+| name | Value |
+| --- | --- |
+| TRAEFIK_HOME_HTTP_ENTRYPOINT | Entrypoint for http routes - defaults to web |
+| TRAEFIK_HOME_HTTPS_ENTRYPOINT | Entrypoint for https routes - defaults to websecure |
+| TRAEFIK_HOME_HTTP_ENTRYPOINT_REGEX | Overrides HTTP entrypoint - example: `^(web|public)$` |
+| TRAEFIK_HOME_HTTPS_ENTRYPOINT_REGEX | Overrides HTTPS entrypoint - example: `^(websecure|tls)$` |
+
 <details>
 <summary>note about setting multiple domains and/or paths on the same rule</summary>
-
 ---
 Traefik allows you to set multiple domains and path on the same rule like 
 ```
