@@ -79,22 +79,22 @@ services:
 
 The `traefik-home` container can be configured using the following optional labels.
 
-| Label  | Description | Default
-| --- | --- | --- |
-| traefik-home.show-footer | Whether to show footer on the home page | true |
-| traefik-home.show-status-dot | Whether to show green/red status dot near the container name | true |
-| traefik-home.sort-by | Container list sort order. Supported values are "default" (container creation date) or "name" | "default" |
-| traefik-home.open-link-in-new-tab | Whether to open services link in a new tab | false |
+| Label                             | Description                                                                                   | Default   |
+|-----------------------------------|-----------------------------------------------------------------------------------------------|-----------|
+| traefik-home.show-footer          | Whether to show footer on the home page                                                       | true      |
+| traefik-home.show-status-dot      | Whether to show green/red status dot near the container name                                  | true      |
+| traefik-home.sort-by              | Container list sort order. Supported values are "default" (container creation date) or "name" | "default" |
+| traefik-home.open-link-in-new-tab | Whether to open services link in a new tab                                                    | false     |
 
 ## Labels to configure containers
 
 Home will use the following `traefik` labels to generate the HTML page.
 
-| Label  | Description |
-| --- | --- |
-| traefik.http.routers.\<service\>.rule | Domain and path used by Home to generate the link to the service |
-| traefik.http.routers.\<service\>.entrypoints | Only `web` or `websecure` entrypoints are shown |
-| traefik.enable | Only explicitly enabled container are shown on the homepage |
+| Label                                        | Description                                                      |
+|----------------------------------------------|------------------------------------------------------------------|
+| traefik.http.routers.\<service\>.rule        | Domain and path used by Home to generate the link to the service |
+| traefik.http.routers.\<service\>.entrypoints | Only `web` or `websecure` entrypoints are shown                  |
+| traefik.enable                               | Only explicitly enabled container are shown on the homepage      |
 
 <details>
 <summary>note about setting multiple domains and/or paths on the same rule</summary>
@@ -127,11 +127,11 @@ Host(`domain.com`) && PathPrefix(`/path`) || Host(`example.org`)
 
 On each exposed container, the following optional labels can be added to provide a personalized configuration.
 
-| Label  | Description |
-| --- | --- |
-| traefik-home.hide="true" | Do not show this container in the home page |
-| traefik-home.icon="https://url/of/icon"  | URL of an image that will be used as icon for the container. If this label is not used, a icon with the container's initials will be used |
-| traefik-home.alias="alias"  | If used, the alias will be shown instead of the container name |
+| Label                                   | Description                                                                                                                               |
+|-----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| traefik-home.hide="true"                | Do not show this container in the home page                                                                                               |
+| traefik-home.icon="https://url/of/icon" | URL of an image that will be used as icon for the container. If this label is not used, a icon with the container's initials will be used |
+| traefik-home.alias="alias"              | If used, the alias will be shown instead of the container name                                                                            |
 
 <details>
 <summary>serving self-hosted icons</summary>
