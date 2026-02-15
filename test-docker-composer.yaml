@@ -1,0 +1,88 @@
+services:
+  traefik:
+    image: traefik:2
+    hostname: traefik
+    container_name: traefik
+    command:
+      - "--log.level=ERROR"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      #- "8080:8080" #web ui
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.rule: "Host(`dashboard.localhost`)"
+      traefik.http.routers.traefik.entrypoints: "websecure"
+      traefik.http.routers.traefik.service: "api@internal"
+      traefik-home.icon: "https://doc.traefik.io/traefik/assets/img/traefikproxy-vertical-logo-color.svg"
+
+  traefik-home:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: traefik-home
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik-home.rule: "Host(`home.localhost`)"
+      org.opencontainers.image.version: 0.0.0-local-testing
+
+  nginx-host-only:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-host-only.rule: "Host(`nginx-host-only.localhost`)"
+      traefik.http.routers.nginx-host-only.entrypoints: "web"
+
+  nginx-path-only:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-path-only.rule: "PathPrefix(`/path-only`)"
+      traefik.http.routers.nginx-path-only.entrypoints: "web"
+
+  nginx-host-and-path:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-host-and-path.rule: "Host(`nginx-host-and-path.localhost`) && PathPrefix(`/path`)"
+      traefik.http.routers.nginx-host-and-path.entrypoints: "web"
+
+  nginx-multiple-host:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-multiple-host.rule: "Host(`nginx-multiple-host.localhost`) || Host(`nginx-multiple-host-2.localhost`)"
+      traefik.http.routers.nginx-multiple-host.entrypoints: "web"
+
+  nginx-host-only-secure:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-host-only-secure.rule: "Host(`nginx-host-only-secure.localhost`)"
+      traefik.http.routers.nginx-host-only-secure.entrypoints: "websecure"
+
+  nginx-with-alias:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-with-alias.rule: "Host(`nginx-with-alias.localhost`)"
+      traefik.http.routers.nginx-with-alias.entrypoints: "web"
+      traefik-home.alias: "NginxWithAlias"
+
+  nginx-hidden:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-hidden.rule: "Host(`nginx-hidden.localhost`)"
+      traefik.http.routers.nginx-hidden.entrypoints: "web"
+      traefik-home.hide: "true"
