@@ -33,7 +33,7 @@ jobs:
         run: sh test.sh
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
