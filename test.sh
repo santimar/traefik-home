@@ -6,11 +6,13 @@ COMPOSE="docker compose -f test-docker-composer.yaml"
 COMPOSE_STOP="$COMPOSE down --volumes --timeout 0"
 BASE_URL="http://home.localhost"
 
+trap '$COMPOSE_STOP' EXIT
+
 echo "===> Starting stack"
 $COMPOSE up -d --build --wait --remove-orphans || {
     $COMPOSE logs
-    $COMPOSE_STOP
-  echo "Unable to start compose"
+    echo "Unable to start compose"
+    exit 1
 }
 $COMPOSE ps
 
@@ -22,7 +24,6 @@ echo "===> Running assertions"
 assert_contains() {
   echo "$PAGE" | grep -q "$1" || {
     echo "Assertion failed: '$1' not found"
-    $COMPOSE_STOP
     exit 1
   }
 }
@@ -30,7 +31,6 @@ assert_contains() {
 assert_not_contains() {
   if echo "$PAGE" | grep -q "$1"; then
     echo "Assertion failed: '$1' SHOULD NOT be present"
-    $COMPOSE_STOP
     exit 1
   fi
 }
@@ -51,8 +51,3 @@ assert_not_contains 'nginx-hidden.localhost'
 
 
 echo "===> Tests passed"
-
-echo "===> Stopping stack"
-$COMPOSE_STOP
-
-echo "===> Done"
