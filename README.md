@@ -7,23 +7,8 @@ This tool will create a homepage for quickly accessing services which are hosted
 
 Domains are automatically retrieved reading traefik labels and only http(s) routers are supported.
 
-> [!IMPORTANT]  
-> This tool makes some assumptions about your Traefik's setup and the way things are configured. Namely, it assumes that the _http_ endpoint is named `web`, while the _https_ endpoint is named `websecure`, in the [static configuration](https://doc.traefik.io/traefik/getting-started/configuration-overview/#the-static-configuration) of Traefik. It is important that this be the case or otherwise, you will end up with an [empty page](../../issues/69).  
-> Assuming that you are using a _configuration file_ (as opposed to ENV variables or CLI options) for your static configuration, the endpoint part of the config might look something like this:
-> ```yaml
-> entryPoints:
-> web:
->   address: ":80"
->   http:
->     redirections:
->       entryPoint:
->         to: https
->         scheme: https
->         permanent: true
-> websecure:
->   address: ":443"
-> ```
-> As seen above, the names chosen for the endpoints are `web` and `websecure`, respectively, which is expected by this tool.
+> [!NOTE]  
+> By default, this tool expects the _http_ entrypoint to be named `web` and the _https_ entrypoint to be named `websecure`. If you use different names in your Traefik [static configuration](https://doc.traefik.io/traefik/getting-started/configuration-overview/#the-static-configuration), you can configure them via the `traefik-home.http-entrypoints` and `traefik-home.https-entrypoints` labels (see [Labels to configure Home](#labels-to-configure-home)).
 
 ## Why this tool
 
@@ -79,12 +64,14 @@ services:
 
 The `traefik-home` container can be configured using the following optional labels.
 
-| Label                             | Description                                                                                   | Default   |
-|-----------------------------------|-----------------------------------------------------------------------------------------------|-----------|
-| traefik-home.show-footer          | Whether to show footer on the home page                                                       | true      |
-| traefik-home.show-status-dot      | Whether to show green/red status dot near the container name                                  | true      |
-| traefik-home.sort-by              | Container list sort order. Supported values are "default" (container creation date) or "name" | "default" |
-| traefik-home.open-link-in-new-tab | Whether to open services link in a new tab                                                    | false     |
+| Label                             | Description                                                                                   | Default      |
+|-----------------------------------|-----------------------------------------------------------------------------------------------|--------------|
+| traefik-home.show-footer          | Whether to show footer on the home page                                                       | true         |
+| traefik-home.show-status-dot      | Whether to show green/red status dot near the container name                                  | true         |
+| traefik-home.sort-by              | Container list sort order. Supported values are "default" (container creation date) or "name" | "default"    |
+| traefik-home.open-link-in-new-tab | Whether to open services link in a new tab                                                    | false        |
+| traefik-home.http-entrypoints     | Comma-separated list of entrypoint names treated as HTTP. Example: `web1,web2`                | "web"        |
+| traefik-home.https-entrypoints    | Comma-separated list of entrypoint names treated as HTTPS. Example: `websecure1,websecure2`   | "websecure"  |
 
 ## Labels to configure containers
 
@@ -93,7 +80,7 @@ Home will use the following `traefik` labels to generate the HTML page.
 | Label                                        | Description                                                      |
 |----------------------------------------------|------------------------------------------------------------------|
 | traefik.http.routers.\<service\>.rule        | Domain and path used by Home to generate the link to the service |
-| traefik.http.routers.\<service\>.entrypoints | Only `web` or `websecure` entrypoints are shown                  |
+| traefik.http.routers.\<service\>.entrypoints | Entrypoints matched against `traefik-home.http-entrypoints` and `traefik-home.https-entrypoints` to determine the protocol |
 | traefik.enable                               | Only explicitly enabled container are shown on the homepage      |
 
 <details>
