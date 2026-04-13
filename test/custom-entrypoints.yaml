@@ -1,0 +1,60 @@
+services:
+  traefik:
+    image: traefik:2
+    hostname: traefik
+    container_name: traefik
+    command:
+      - "--log.level=ERROR"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.myweb.address=:8080"
+      - "--entrypoints.mywebsecure.address=:8443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  traefik-home:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: traefik-home
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik-home.rule: "Host(`home.localhost`)"
+      traefik.http.routers.traefik-home.entrypoints: "web"
+      org.opencontainers.image.version: 0.0.0-local-testing
+      traefik-home.http-entrypoints: "myweb"
+      traefik-home.https-entrypoints: "mywebsecure"
+
+  # Should appear as http:// — uses custom HTTP entrypoint
+  nginx-custom-http:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-custom-http.rule: "Host(`nginx-custom-http.localhost`)"
+      traefik.http.routers.nginx-custom-http.entrypoints: "myweb"
+
+  # Should appear as https:// — uses custom HTTPS entrypoint
+  nginx-custom-https:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-custom-https.rule: "Host(`nginx-custom-https.localhost`)"
+      traefik.http.routers.nginx-custom-https.entrypoints: "mywebsecure"
+
+  # Should NOT appear — uses standard 'web' entrypoint, not in the custom list
+  nginx-standard-web:
+    image: nginx:1.21-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nginx-standard-web.rule: "Host(`nginx-standard-web.localhost`)"
+      traefik.http.routers.nginx-standard-web.entrypoints: "web"

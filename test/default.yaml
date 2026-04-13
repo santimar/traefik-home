@@ -25,7 +25,7 @@ services:
 
   traefik-home:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     container_name: traefik-home
     restart: unless-stopped
