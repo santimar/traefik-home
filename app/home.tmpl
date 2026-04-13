@@ -3,6 +3,8 @@
 {{ $show_status_dot := or (index $home_container.Labels "traefik-home.show-status-dot") "true" | parseBool }}
 {{ $sort_by := or (index $home_container.Labels "traefik-home.sort-by") "default" }}
 {{ $link_in_new_tab := or (index $home_container.Labels "traefik-home.open-link-in-new-tab") "false" | parseBool }}
+{{ $http_entrypoints := split (or (index $home_container.Labels "traefik-home.http-entrypoints") "web") "," }}
+{{ $https_entrypoints := split (or (index $home_container.Labels "traefik-home.https-entrypoints") "websecure") "," }}
 {{ $target := "_self" }}
 {{ if $link_in_new_tab }}
     {{ $target = "_blank" }}
@@ -147,13 +149,28 @@
 
                 {{ $entrypoint_label := print "traefik.http.routers." $service_name ".entrypoints" }}
                 {{ $entrypoint := index $container.Labels $entrypoint_label }}
+
+                {{/* Skip if no entrypoint label is defined */}}
+                {{ if not $entrypoint }}
+                    {{continue}}
+                {{ end }}
+
                 {{ $protocol := "" }}
-                {{ if eq $entrypoint "websecure" }}
-                    {{ $protocol = "https" }}
-                {{ else if eq $entrypoint "web" }}
-                    {{ $protocol = "http" }}
-                {{ else }}
-                    {{/* entrypoint not supported */}}
+                {{ range $ep := $https_entrypoints }}
+                    {{ if eq $entrypoint $ep }}
+                        {{ $protocol = "https" }}
+                    {{ end }}
+                {{ end }}
+                {{ if eq $protocol "" }}
+                    {{ range $ep := $http_entrypoints }}
+                        {{ if eq $entrypoint $ep }}
+                            {{ $protocol = "http" }}
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
+
+                {{/* Skip if entrypoint not in configured entrypoints */}}
+                {{ if eq $protocol "" }}
                     {{continue}}
                 {{ end }}
 
